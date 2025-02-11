@@ -1,0 +1,57 @@
+﻿@model Employee;
+
+@{
+    ViewData["Title"] = "Update Employee";
+}
+
+<form asp-controller="Employee" asp-action="Edit">
+    <div class="d-flex align-items-center mb-2">
+        <h4 class="me-auto mb-0">Update Employee</h4>
+        <a class="btn btn-outline-primary btn-sm m-1" role="button" asp-controller="Employee" asp-action="Index">Back</a>
+        <input type="submit" value="Update" class="btn btn-primary btn-sm m-1" />
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+            <input asp-for="Id" type="hidden" />
+
+            <div class="row mb-3 g-3 align-items-center">
+                <div class="col-sm-2">
+                    <label asp-for="FirstName" class="col-form-label"></label>
+                </div>
+                <div class="col-sm-3">
+                    <input asp-for="FirstName" class="form-control" />
+                </div>
+                <div class="col-auto">
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3 g-3 align-items-center">
+                <div class="col-sm-2">
+                    <label asp-for="LastName" class="col-form-label"></label>
+                </div>
+                <div class="col-sm-3">
+                    <input asp-for="LastName" class="form-control" />
+                </div>
+                <div class="col-auto">
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3 g-3 align-items-center">
+                <div class="col-sm-2">
+                    <label asp-for="DateOfBirth" class="col-form-label"></label>
+                </div>
+                <div class="col-sm-3">
+                    <input asp-for="DateOfBirth" class="form-control" type="date" />
+                </div>
+                <div class="col-auto">
+                    <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
