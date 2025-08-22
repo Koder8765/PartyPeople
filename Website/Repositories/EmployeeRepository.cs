@@ -31,7 +31,8 @@ public class EmployeeRepository : RepositoryBase
                     [Id] integer primary key,
                     [FirstName] nvarchar(2147483647) NOT NULL COLLATE NOCASE,
                     [LastName] nvarchar(2147483647) NOT NULL COLLATE NOCASE,
-                    [DateOfBirth] date NOT NULL
+                    [DateOfBirth] date NOT NULL,    
+                    [FavouriteDrink] nvarchar(90) NULL 
                 );
             ",
             commandType: CommandType.Text,
@@ -52,7 +53,8 @@ public class EmployeeRepository : RepositoryBase
                 SELECT  [Id],
                         [FirstName],
                         [LastName],
-                        [DateOfBirth]
+                        [DateOfBirth],
+                        [FavouriteDrink]
                 FROM    [Employee] AS [E];
             ",
             commandType: CommandType.Text,
@@ -78,7 +80,8 @@ public class EmployeeRepository : RepositoryBase
                 SELECT  [E].[Id],
                         [E].[FirstName],
                         [E].[LastName],
-                        [E].[DateOfBirth]
+                        [E].[DateOfBirth],
+                        [E].[FavouriteDrink]
                 FROM    [Employee] AS [E]
                 WHERE   [E].[Id] = @Id;
             ",
@@ -134,7 +137,8 @@ public class EmployeeRepository : RepositoryBase
                 (
                     [FirstName],
                     [LastName],
-                    [DateOfBirth]
+                    [DateOfBirth],
+                    [FavouriteDrink]
                 )
                 VALUES
                 (
@@ -146,7 +150,8 @@ public class EmployeeRepository : RepositoryBase
                 SELECT  [E].[Id],
                         [E].[FirstName],
                         [E].[LastName],
-                        [E].[DateOfBirth]
+                        [E].[DateOfBirth],
+                   [E].[FavouriteDrink]
                 FROM    [Employee] AS [E]
                 WHERE   [E].[Id] = last_insert_rowid();
             ",
@@ -154,7 +159,8 @@ public class EmployeeRepository : RepositoryBase
             {
                 employee.FirstName,
                 employee.LastName,
-                employee.DateOfBirth
+                employee.DateOfBirth,
+                employee.FavouriteDrink
             },
             commandType: CommandType.Text,
             cancellationToken: cancellationToken);
@@ -176,13 +182,15 @@ public class EmployeeRepository : RepositoryBase
                 UPDATE  [Employee]
                 SET     [FirstName] = @FirstName,
                         [LastName] = @LastName,
-                        [DateOfBirth] = @DateOfBirth
+                        [DateOfBirth] = @DateOfBirth,
+                   [FavouriteDrink] = @FavouriteDrink
                 WHERE   [Id] = @Id;
 
                 SELECT  [E].[Id],
                         [E].[FirstName],
                         [E].[LastName],
-                        [E].[DateOfBirth]
+                        [E].[DateOfBirth],
+                   [E].[FavouriteDrink]
                 FROM    [Employee] AS [E]
                 WHERE   [E].[Id] = @Id;
             ",
@@ -191,7 +199,8 @@ public class EmployeeRepository : RepositoryBase
                 employee.Id,
                 employee.FirstName,
                 employee.LastName,
-                employee.DateOfBirth
+                employee.DateOfBirth,
+                employee.FavouriteDrink
             },
             commandType: CommandType.Text,
             cancellationToken: cancellationToken);

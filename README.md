@@ -37,7 +37,7 @@ To build the PartyPeople application, you need to follow the steps below.
 2. Open the PartyPeople.sln in Visual Studio
 
 3. Build and Run the Website project in Visual Studio
-
+x``
 ## Tasks
 
 You only need to spend as much time on the tasks as you feel necessary to demonstrate your capabilities, and you don't need to complete every task.
@@ -45,21 +45,58 @@ We estimate that it could take between four and seven hours to complete all task
 
 To complete the application, you need to carry out the tasks below.
 
-### Task 1
+### Task 1 - Done
 
 The PartyPeople project does not currently build. Can you help figure out why, and resolve the build issues?
 
-### Task 2
+Installed a Nuget package for Dapper dependencies
+
+### Task 2 - Done
 
 A bug has been reported that updating events is not working as expected. Can you help by debugging the functionality and resolving the issue?
+
+Debugging with browser console didn't yield anything obvious from the get go apart from 304 during any action taken,  nowever it was a red herring as
+when I have created multiplies entries the browser gave an error and updated all of the Event descriptions. I have inspected all of the EventRepositories
+and spotted that the update command (UpdateAsync) is not specifc enough:
+
+                UPDATE  [Event]
+                SET     [Description] = @Description,
+                        [StartDateTime] = @StartDateTime,
+                        [EndDateTime] = @EndDateTime,
+                        [MaximumCapacity] = @MaximumCapacity;
+                        WHERE   [E].[Id] = @Id;
+
+                SELECT  [E].[Id],
+                        [E].[Description],
+                        [E].[StartDateTime],
+                        [E].[EndDateTime],
+                        [E].[MaximumCapacity]
+                FROM    [Event] AS [E];
+                WHERE   [E].[Id] = @Id;
+
+Meaning this will Update all Event's during update action as it's not specifying specfically which Event to update (no Where clause that would
+identify the unique part of the Event.)
+The fix is simple, to update with a Where clause.
+
+I have also added to see the update event adding Console.WriteLine($"Updating event with ID: {@event.Id}");
+
 
 ### Task 3
 
 Koderly would like to track which employees are attending which events. Can you extend the PartyPeople application to add this functionality?
 
-### Task 4
+### Task 4 - Done
 
 Koderly would like to track which drinks should be ordered for employees. Can you extend the functionality to allow each employee to optionally specify a ‘Favourite Drink’?
+
+Added a new entry in Employee class, a nullable string called FavouriteDrink, made a new validator entry so the FavouriteDrink field could be 90 characters max (cause who needs to have a triple digit character long drink) even then this might not be safe from sql
+injection in the future.
+Noww to actually get to the user page, i would need to either drop all the data within the table and re-create it within the db itself or Alter the table for the existing db. I have decided to go the Alter Table route (I've used DBeaver for this one) with
+the following function:
+
+ALTER TABLE Employee ADD COLUMN [FavouriteDrink] NVARCHAR(90) NULL
+
+Obviously, before that i went in and added all UI elemnts for this to work on UI within the cshtml files.
 
 ### Task 5
 

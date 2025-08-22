@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.IdentityModel.Tokens;
 using Website.Models;
 
 namespace Website.Validation;
@@ -30,5 +31,11 @@ public class EmployeeValidator : AbstractValidator<Employee>
         RuleFor(x => x.DateOfBirth)
             .LessThan(DateOnly.FromDateTime(DateTime.Now))
             .WithMessage($"The Date of Birth must be less than '{DateOnly.FromDateTime(DateTime.Now):dd/MM/yyyy}'.");
+
+        RuleFor(x => x.FavouriteDrink)
+            .MaximumLength(90)
+            .When(x => !string.IsNullOrEmpty(x.FavouriteDrink))
+            .WithMessage($"Leave this empty if you have no favourite drink, drink can be maximum 90 characters long.");
+
     }
 }

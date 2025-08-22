@@ -187,21 +187,24 @@ public class EventRepository : RepositoryBase
     {
         var command = new CommandDefinition(
             @"
-                UPDATE  [Event]
-                SET     [Description] = @Description,
-                        [StartDateTime] = @StartDateTime,
-                        [EndDateTime] = @EndDateTime,
-                        [MaximumCapacity] = @MaximumCapacity;
+            UPDATE  [Event]
+            SET     [Description] = @Description,
+                    [StartDateTime] = @StartDateTime,
+                    [EndDateTime] = @EndDateTime,
+                    [MaximumCapacity] = @MaximumCapacity
+            WHERE   [Id] = @Id;
 
-                SELECT  [E].[Id],
-                        [E].[Description],
-                        [E].[StartDateTime],
-                        [E].[EndDateTime],
-                        [E].[MaximumCapacity]
-                FROM    [Event] AS [E];
+            SELECT  [E].[Id],
+                    [E].[Description],
+                    [E].[StartDateTime],
+                    [E].[EndDateTime],
+                    [E].[MaximumCapacity]
+            FROM    [Event] AS [E]
+            WHERE   [E].[Id] = @Id;
             ",
             parameters: new
             {
+                @event.Id,
                 @event.Description,
                 @event.StartDateTime,
                 @event.EndDateTime,
