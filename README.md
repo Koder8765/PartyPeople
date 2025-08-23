@@ -81,9 +81,60 @@ The fix is simple, to update with a Where clause.
 I have also added to see the update event adding Console.WriteLine($"Updating event with ID: {@event.Id}");
 
 
-### Task 3
+### Task 3 - Done
 
 Koderly would like to track which employees are attending which events. Can you extend the PartyPeople application to add this functionality?
+
+The plan was to make an additional page within the Even editor screen called "Manage Attendees" where a user can come in and tick boxes of all users in the system.
+
+To implement it I have created an EventAttendee table to track which employees are attending which events combining both EventId and EmployeeId also knowns as Many-to-Many relationship data model.
+Reverse engineering practice from two previous models, I have added CreateTableIfNotExistsAsync method to ensure the EventAttendee table is created automatically at startup:
+
+        CREATE TABLE IF NOT EXISTS [EventAttendee] (
+            [EventId] INTEGER NOT NULL,
+            [EmployeeId] INTEGER NOT NULL,
+            PRIMARY KEY (EventId, EmployeeId),
+            FOREIGN KEY (EventId) REFERENCES Event(Id) ON DELETE CASCADE,
+            FOREIGN KEY (EmployeeId) REFERENCES Employee(Id) ON DELETE CASCADE
+        )
+
+Created event attendee controller that allows for two methods:
+
+- GET: /EventAttandee/Manage/5, allows to initialize the manage page with all of the employees
+- POST: /EventAttendee/Manage/5, allows to make an update to an Event to add attendees
+
+Repository wise, I have created a dedicated EventAttendeeRepository with the following methods:
+
+- Add attendees (AddAttendeeAsync)
+- Replace attendees (ReplaceAttendeesAsync)
+- Retrieve all attendees for a given event (GetAttendeesForEventAsync)
+
+Made appropriate references for EventAttendeeRepository in main DbContext file for full access across the app.
+
+Put the link in Details toolbar to link to the appropriate page via
+    <a class="btn btn-outline-secondary btn-sm m-1" role="button" asp-controller="EventAttendee" asp-action="Manage" asp-route-eventId="@Model.Id">Manage Attendees</a>
+
+
+Additionally: I have added 2 more features - count of actual attendants and a warning when picking employees above maximum capacity.
+
+Changes made:
+For attende count:
+- In EventAttendeeViewModel, ive added CurrentAttendeesCount  to look at a total count of selected Employees.
+- In EventAttendees, I make the calculation via the following var currentAttendeesCount = attendees.Count;
+- For it to be seen in UI I have decided to go with minimalism and made it as a number in bracked near Maximum capacity so there would not be addditional UI clutter by simply adding this <p>Current Attendees: @Model.CurrentAttendeesCount</p>
+
+Maximum capacity warning:
+- In EventAttendeeViewModel, I introduced a boolean property track that makes a simple check wherever the Max Capacity check was achieved or overpicked via MaxCapacityExceeded boolean.
+- To actually check for MaximumCapacity, I compare the currently picked attendees over all number vs >= of Maximum capacity value (or if it even has a value)
+- For UI, I have made a conditional logic to display warning (but still allowing the end user to pick more attendees) if the maximum is exceeded by doing the following 
+ @if (Model.MaxCapacityExceeded)
+{
+    <div class="alert alert-warning mt-3">
+        <strong>Warning:</strong> The number of selected attendees has reached or exceeded the event's maximum capacity of @Model.Event.MaximumCapacity.
+    </div>
+}
+
+
 
 ### Task 4 - Done
 
@@ -98,7 +149,7 @@ ALTER TABLE Employee ADD COLUMN [FavouriteDrink] NVARCHAR(90) NULL
 
 Obviously, before that i went in and added all UI elemnts for this to work on UI within the cshtml files.
 
-### Task 5
+### Task 5 
 
 Koderly would like to track the five most social employees (i.e. employees who have attended the most events). Can you add a widget to the Home screen to display this information?
 

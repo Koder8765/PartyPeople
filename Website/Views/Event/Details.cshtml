@@ -1,5 +1,6 @@
 ﻿@model Event;
 
+
 @{
     ViewData["Title"] = "Event Details";
 }
@@ -7,6 +8,7 @@
 <div class="d-flex align-items-center mb-2">
     <h4 class="me-auto mb-0">Event Details</h4>
     <a class="btn btn-outline-primary btn-sm m-1" role="button" asp-controller="Event" asp-action="Index">Back</a>
+    <a class="btn btn-outline-secondary btn-sm m-1" role="button" asp-controller="EventAttendee" asp-action="Manage" asp-route-eventId="@Model.Id">Manage Attendees</a>
     <a class="btn btn-warning btn-sm m-1" role="button" asp-controller="Event" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
     <a class="btn btn-danger btn-sm m-1" role="button" data-bs-toggle="modal" data-bs-target="#confirmDelete">Delete</a>
 </div>
@@ -43,10 +45,13 @@
             </div>
             <div class="col-sm-3">
                 <span>@Model.MaximumCapacity</span>
+                
+                <span class="text-muted"> (@ViewData["AttendeeCount"])</span> <!-- Display count of current attendees -->
             </div>
         </div>
     </div>
 </div>
+
 
 <div class="modal fade" id="confirmDelete" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
     <div class="modal-dialog">

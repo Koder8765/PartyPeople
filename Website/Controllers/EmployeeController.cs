@@ -56,6 +56,8 @@ namespace Website.Controllers
                 return View(employee);
             }
 
+            _logger.LogInformation("Creating Employee: {@Employee}", employee);
+
             var createdEmployee = await _dbContext.Employees.CreateAsync(employee, cancellationToken);
 
             return RedirectToAction(nameof(Details), new { id = createdEmployee.Id });

@@ -144,7 +144,8 @@ public class EmployeeRepository : RepositoryBase
                 (
                     @FirstName,
                     @LastName,
-                    @DateOfBirth
+                    @DateOfBirth,
+                    @FavouriteDrink
                 );
 
                 SELECT  [E].[Id],

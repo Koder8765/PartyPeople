@@ -239,4 +239,27 @@ public class EventRepository : RepositoryBase
 
         await Connection.ExecuteAsync(command);
     }
+
+    /// <summary>
+    /// Creates an attendee table 
+    /// </summary>
+    public async Task CreateAttendeeTableIfNotExistsAsync(CancellationToken cancellationToken)
+    {
+        var command = new CommandDefinition(
+            @"
+            CREATE TABLE IF NOT EXISTS [EventAttendee] (
+                [EventId] INTEGER NOT NULL,
+                [EmployeeId] INTEGER NOT NULL,
+                PRIMARY KEY ([EventId], [EmployeeId]),
+                FOREIGN KEY ([EventId]) REFERENCES [Event]([Id]) ON DELETE CASCADE,
+                FOREIGN KEY ([EmployeeId]) REFERENCES [Employee]([Id]) ON DELETE CASCADE
+            );
+        ",
+            commandType: CommandType.Text,
+            cancellationToken: cancellationToken
+        );
+
+        await Connection.ExecuteAsync(command);
+    }
+
 }
