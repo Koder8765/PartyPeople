@@ -262,4 +262,24 @@ public class EventRepository : RepositoryBase
         await Connection.ExecuteAsync(command);
     }
 
+    /// <summary>
+    /// Check for Events with 0 attendancy
+    /// </summary>
+    public async Task<IReadOnlyCollection<Event>> GetEventsWithNoAttendeeAsync(CancellationToken cancellationToken = default)
+    {
+        var command = new CommandDefinition(
+      @"
+        SELECT E.Id, E.Description, E.StartDateTime, E.EndDateTime, E.MaximumCapacity
+        FROM [Event] E
+        LEFT JOIN [EventAttendee] EA ON E.Id = EA.EventId
+        WHERE EA.EventId IS NULL
+        ORDER BY E.StartDateTime ASC;
+    ",
+      commandType: CommandType.Text,
+      cancellationToken: cancellationToken);
+
+        var events = await Connection.QueryAsync<Event>(command);
+        return events.ToArray();
+    }
+
 }

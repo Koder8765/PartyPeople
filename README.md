@@ -178,6 +178,20 @@ Unable to resolve service for type 'IDbConnectionProvider' while attempting to a
 
 Koderly would like to track upcoming events which have no attendees registered. Can you add a widget to the Home screen to display this information?
 
+I have decided to do a simple approach and just create a new task that reads events within EventRepository that would just check for EventId to be set for NULL (Ascend by Date so it would prioritise by start date):
+
+        SELECT E.Id, E.Description, E.StartDateTime, E.EndDateTime, E.MaximumCapacity
+        FROM [Event] E
+        LEFT JOIN [EventAttendee] EA ON E.Id = EA.EventId
+        WHERE EA.EventId IS NULL
+        ORDER BY E.StartDateTime ASC;
+
+Obviously to connect the no-attendee event and actually register for Home screen, I have added a new propert called EventsWithNoAttendees within HomeViewModel.cs (which is nullable not to break anything).
+Which prompts an update to HomeController.cs to add a new entry in the constructor.
+
+Lastly, I have made it so the columns would look similar in style as the "Upcoming 7-Days" giving the ability for the user to manage attendees right from UI.
+
+
 ## Submission
 
 Please commit your work for review by **11 am** on **Thursday, 28 August 2025**, by completing the steps below.

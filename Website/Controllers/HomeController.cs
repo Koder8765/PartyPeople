@@ -12,17 +12,20 @@ public class HomeController : Controller
     private readonly ILogger<HomeController> _logger;
     private readonly EventAttendeeRepository _eventAttendeeRepository;
     private readonly EmployeeRepository _employeeRepository;
+    private readonly EventRepository _eventRepository;
 
 
     public HomeController(DbContext dbContext,
         ILogger<HomeController> logger,
         EventAttendeeRepository eventAttendeeRepository,
-        EmployeeRepository employeeRepository)
+        EmployeeRepository employeeRepository,
+        EventRepository eventRepository)
     {
         _dbContext = dbContext;
         _logger = logger;
         _eventAttendeeRepository = eventAttendeeRepository;
         _employeeRepository = employeeRepository;
+        _eventRepository = eventRepository;
     }
 
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
@@ -33,11 +36,14 @@ public class HomeController : Controller
         // Get top 5 attendees using the repository method
         var topEmployees = await _eventAttendeeRepository.GetTopAttendeesAsync(cancellationToken);
 
+        var eventsWithNoAttendees = await _eventRepository.GetEventsWithNoAttendeeAsync(cancellationToken);
+
         // Prepare the model for the view
         var model = new HomeViewModel
         {
             Events = upcomingEvents,
-            TopAttendees = topEmployees
+            TopAttendees = topEmployees,
+            EventsWithNoAttendees = eventsWithNoAttendees
         };
 
         return View(model);
