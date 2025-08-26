@@ -149,9 +149,30 @@ ALTER TABLE Employee ADD COLUMN [FavouriteDrink] NVARCHAR(90) NULL
 
 Obviously, before that i went in and added all UI elemnts for this to work on UI within the cshtml files.
 
-### Task 5 
+### Task 5 - Done
 
 Koderly would like to track the five most social employees (i.e. employees who have attended the most events). Can you add a widget to the Home screen to display this information?
+
+The idea is to replicate the script responsible for "Event Upcoming in 7 Days" in the main index page.
+
+I have created a new addition to EventAttendeeRepository.cs that checks for top 5 EventCount when doing a join between EventAttendee and Employee and Grouping them based on Employees Id which logically checks the amount of time Employee Id is referenced.
+Obviously it's limited to 5 and picks only 3 headers so the query would be as optimised as possible:
+
+            SELECT E.Id, E.FirstName, E.LastName, COUNT(EA.EventId) AS EventCount
+            FROM Employee E
+            JOIN EventAttendee EA ON E.Id = EA.EmployeeId
+            GROUP BY E.Id
+            ORDER BY EventCount DESC
+            LIMIT 5;
+
+After this, I updated the Home Controller to call this method and pass the data to the Home page for display.
+
+As a last note I struggled slightly to add dependecies. For context, the repositories (EmployeeRepository, EventRepository, EventAttendeeRepository) depend on IDbConnectionProvider for database connections.
+I realized I forgot to register IDbConnectionProvider in the DI container, which caused the runtime error:
+
+Unable to resolve service for type 'IDbConnectionProvider' while attempting to activate 'EmployeeRepository'
+
+
 
 ### Task 6
 

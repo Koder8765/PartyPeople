@@ -38,5 +38,11 @@ public class Employee
     /// When <see langword="null"/>, that means the employee does not have a specific drink in mind
     /// </remarks>
     [DisplayName("Favourite Drink")]
-    public string? FavouriteDrink { get; init; }    
+    public string? FavouriteDrink { get; init; }
+
+    /// <summary>
+    /// Holds number of events attended
+    /// </summary>
+    public int? EventCount { get; set; }
+
 }

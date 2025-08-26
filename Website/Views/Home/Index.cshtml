@@ -1,5 +1,4 @@
-﻿@model IEnumerable<Event>;
-
+﻿@model Website.Models.HomeViewModel
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -21,17 +20,20 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var eventDetails in Model)
+            @if (Model.Events?.Any() == true)
             {
-                <tr>
-                    <td>@eventDetails.StartDateTime.ToString("dd/MM/yyyy HH:mm")</td>
-                    <td>@eventDetails.Description</td>
-                    <td class="text-end py-1">
-                        <a class="btn btn-outline-primary btn-sm" role="button" asp-controller="Event" asp-action="Details" asp-route-id="@eventDetails.Id">View</a>
-                    </td>
-                </tr>
+                foreach (var eventDetails in Model.Events)
+                {
+                    <tr>
+                        <td>@eventDetails.StartDateTime.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@eventDetails.Description</td>
+                        <td class="text-end py-1">
+                            <a class="btn btn-outline-primary btn-sm" role="button" asp-controller="Event" asp-action="Details" asp-route-id="@eventDetails.Id">View</a>
+                        </td>
+                    </tr>
+                }
             }
-            @if (!Model.Any())
+            else
             {
                 <tr>
                     <td colspan="4">No upcoming events.</td>
@@ -40,3 +42,25 @@
         </tbody>
     </table>
 </div>
+
+<h3>Top 5 Social Butterflies</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Events Attended</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.TopAttendees?.Any() == true)
+        {
+            foreach (var attendee in Model.TopAttendees)
+            {
+                <tr>
+                    <td>@attendee.FirstName @attendee.LastName</td>
+                    <td>@attendee.EventCount</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

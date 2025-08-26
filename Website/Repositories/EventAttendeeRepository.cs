@@ -2,6 +2,7 @@
 using NuGet.Protocol.Plugins;
 using System.Data;
 using System.Data.Common;
+using System.Runtime.CompilerServices;
 using System.Transactions;
 using Website.Models;
 using Website.Persistence;
@@ -113,6 +114,25 @@ namespace Website.Repositories
             }
 
             transaction.Commit();
+        }
+
+        public async Task<IReadOnlyList<Employee>> GetTopAttendeesAsync(CancellationToken cancellationToken = default)
+        {
+            var command = new CommandDefinition(
+                @"
+            SELECT E.Id, E.FirstName, E.LastName, COUNT(EA.EventId) AS EventCount
+            FROM Employee E
+            JOIN EventAttendee EA ON E.Id = EA.EmployeeId
+            GROUP BY E.Id
+            ORDER BY EventCount DESC
+            LIMIT 5;
+        ",
+                commandType: CommandType.Text,
+                cancellationToken: cancellationToken
+            );
+
+            var topAttendees = await Connection.QueryAsync<Employee>(command);
+            return topAttendees.ToList();
         }
     }
 }
