@@ -187,21 +187,24 @@ public class EventRepository : RepositoryBase
     {
         var command = new CommandDefinition(
             @"
-                UPDATE  [Event]
-                SET     [Description] = @Description,
-                        [StartDateTime] = @StartDateTime,
-                        [EndDateTime] = @EndDateTime,
-                        [MaximumCapacity] = @MaximumCapacity;
+            UPDATE  [Event]
+            SET     [Description] = @Description,
+                    [StartDateTime] = @StartDateTime,
+                    [EndDateTime] = @EndDateTime,
+                    [MaximumCapacity] = @MaximumCapacity
+            WHERE   [Id] = @Id;
 
-                SELECT  [E].[Id],
-                        [E].[Description],
-                        [E].[StartDateTime],
-                        [E].[EndDateTime],
-                        [E].[MaximumCapacity]
-                FROM    [Event] AS [E];
+            SELECT  [E].[Id],
+                    [E].[Description],
+                    [E].[StartDateTime],
+                    [E].[EndDateTime],
+                    [E].[MaximumCapacity]
+            FROM    [Event] AS [E]
+            WHERE   [E].[Id] = @Id;
             ",
             parameters: new
             {
+                @event.Id,
                 @event.Description,
                 @event.StartDateTime,
                 @event.EndDateTime,
@@ -236,4 +239,47 @@ public class EventRepository : RepositoryBase
 
         await Connection.ExecuteAsync(command);
     }
+
+    /// <summary>
+    /// Creates an attendee table 
+    /// </summary>
+    public async Task CreateAttendeeTableIfNotExistsAsync(CancellationToken cancellationToken)
+    {
+        var command = new CommandDefinition(
+            @"
+            CREATE TABLE IF NOT EXISTS [EventAttendee] (
+                [EventId] INTEGER NOT NULL,
+                [EmployeeId] INTEGER NOT NULL,
+                PRIMARY KEY ([EventId], [EmployeeId]),
+                FOREIGN KEY ([EventId]) REFERENCES [Event]([Id]) ON DELETE CASCADE,
+                FOREIGN KEY ([EmployeeId]) REFERENCES [Employee]([Id]) ON DELETE CASCADE
+            );
+        ",
+            commandType: CommandType.Text,
+            cancellationToken: cancellationToken
+        );
+
+        await Connection.ExecuteAsync(command);
+    }
+
+    /// <summary>
+    /// Check for Events with 0 attendancy
+    /// </summary>
+    public async Task<IReadOnlyCollection<Event>> GetEventsWithNoAttendeeAsync(CancellationToken cancellationToken = default)
+    {
+        var command = new CommandDefinition(
+      @"
+        SELECT E.Id, E.Description, E.StartDateTime, E.EndDateTime, E.MaximumCapacity
+        FROM [Event] E
+        LEFT JOIN [EventAttendee] EA ON E.Id = EA.EventId
+        WHERE EA.EventId IS NULL
+        ORDER BY E.StartDateTime ASC;
+    ",
+      commandType: CommandType.Text,
+      cancellationToken: cancellationToken);
+
+        var events = await Connection.QueryAsync<Event>(command);
+        return events.ToArray();
+    }
+
 }

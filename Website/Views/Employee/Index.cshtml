@@ -15,6 +15,7 @@
                 <th scope="col">First Name</th>
                 <th scope="col">Last Name</th>
                 <th scope="col">Date of Birth</th>
+                <th scope="col">Favourite Drink</th>
                 <th scope="col" class="col-sm-2"></th>
             </tr>
         </thead>
@@ -25,6 +26,7 @@
                     <td>@employee.FirstName</td>
                     <td>@employee.LastName</td>
                     <td>@employee.DateOfBirth.ToString("dd/MM/yyyy")</td>
+                    <td>@employee.FavouriteDrink</td>
                     <td class="text-end py-1">
                         <a class="btn btn-outline-primary btn-sm" role="button" asp-controller="Employee" asp-action="Details" asp-route-id="@employee.Id">View</a>
                     </td>

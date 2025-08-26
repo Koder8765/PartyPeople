@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using Website.Models;
 using Website.Persistence;
+using Website.Repositories;
 
 namespace Website.Controllers;
 
@@ -9,11 +10,22 @@ public class HomeController : Controller
 {
     private readonly DbContext _dbContext;
     private readonly ILogger<HomeController> _logger;
+    private readonly EventAttendeeRepository _eventAttendeeRepository;
+    private readonly EmployeeRepository _employeeRepository;
+    private readonly EventRepository _eventRepository;
 
-    public HomeController(DbContext dbContext, ILogger<HomeController> logger)
+
+    public HomeController(DbContext dbContext,
+        ILogger<HomeController> logger,
+        EventAttendeeRepository eventAttendeeRepository,
+        EmployeeRepository employeeRepository,
+        EventRepository eventRepository)
     {
         _dbContext = dbContext;
         _logger = logger;
+        _eventAttendeeRepository = eventAttendeeRepository;
+        _employeeRepository = employeeRepository;
+        _eventRepository = eventRepository;
     }
 
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
@@ -21,7 +33,20 @@ public class HomeController : Controller
         var events = await _dbContext.Events.GetAllAsync(includeHistoricEvents: false, cancellationToken);
         var upcomingEvents = events.Where(@event => @event.StartDateTime >= DateTime.Now && @event.StartDateTime <= DateTime.Now.AddDays(7));
 
-        return View(upcomingEvents);
+        // Get top 5 attendees using the repository method
+        var topEmployees = await _eventAttendeeRepository.GetTopAttendeesAsync(cancellationToken);
+
+        var eventsWithNoAttendees = await _eventRepository.GetEventsWithNoAttendeeAsync(cancellationToken);
+
+        // Prepare the model for the view
+        var model = new HomeViewModel
+        {
+            Events = upcomingEvents,
+            TopAttendees = topEmployees,
+            EventsWithNoAttendees = eventsWithNoAttendees
+        };
+
+        return View(model);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

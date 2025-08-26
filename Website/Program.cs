@@ -2,6 +2,7 @@ using Dapper;
 using FluentValidation;
 using System.Reflection;
 using Website.Persistence;
+using Website.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -10,8 +11,14 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly(), ServiceLifetime.Transient);
 
+
 services.AddTransient<IDbConnectionFactory>(_ => new SqliteConnectionFactory(connectionString));
+services.AddTransient<IDbConnectionProvider, DbConnectionProvider>();
 services.AddTransient<DbContext>();
+services.AddTransient<EmployeeRepository>();
+services.AddTransient<EventAttendeeRepository>();
+services.AddTransient<EventRepository>();
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

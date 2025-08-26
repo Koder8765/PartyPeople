@@ -1,5 +1,4 @@
-﻿@model IEnumerable<Event>;
-
+﻿@model Website.Models.HomeViewModel
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -21,17 +20,20 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var eventDetails in Model)
+            @if (Model.Events?.Any() == true)
             {
-                <tr>
-                    <td>@eventDetails.StartDateTime.ToString("dd/MM/yyyy HH:mm")</td>
-                    <td>@eventDetails.Description</td>
-                    <td class="text-end py-1">
-                        <a class="btn btn-outline-primary btn-sm" role="button" asp-controller="Event" asp-action="Details" asp-route-id="@eventDetails.Id">View</a>
-                    </td>
-                </tr>
+                foreach (var eventDetails in Model.Events)
+                {
+                    <tr>
+                        <td>@eventDetails.StartDateTime.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@eventDetails.Description</td>
+                        <td class="text-end py-1">
+                            <a class="btn btn-outline-primary btn-sm" role="button" asp-controller="Event" asp-action="Details" asp-route-id="@eventDetails.Id">View</a>
+                        </td>
+                    </tr>
+                }
             }
-            @if (!Model.Any())
+            else
             {
                 <tr>
                     <td colspan="4">No upcoming events.</td>
@@ -40,3 +42,63 @@
         </tbody>
     </table>
 </div>
+
+<div class="d-flex p-2 mt-5">
+    <h4 class="flex-fill">Events with No Attendees</h4>
+</div>
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th scope="col" class="col-sm-2">Event Start</th>
+                <th scope="col">Description</th>
+                <th scope="col">Capacity</th>
+                <th scope="col" class="col-sm-2"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.EventsWithNoAttendees?.Any() == true)
+            {
+                foreach (var eventInfo in Model.EventsWithNoAttendees)
+                {
+                    <tr>
+                        <td>@eventInfo.StartDateTime.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@eventInfo.Description</td>
+                        <td>@eventInfo.MaximumCapacity</td>
+                        <td class="text-end py-1">
+                            <a class="btn btn-outline-secondary btn-sm" role="button" asp-controller="EventAttendee" asp-action="Manage" asp-route-eventId="@eventInfo.Id">Manage Attendees</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4" class="text-muted">All of the events have at least one attendee or there are no parties to attend to, either way good job!</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<h3>Top 5 Social Butterflies</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Full Name</th>
+            <th>Events Attended</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.TopAttendees?.Any() == true)
+        {
+            foreach (var attendee in Model.TopAttendees)
+            {
+                <tr>
+                    <td>@attendee.FirstName @attendee.LastName</td>
+                    <td>@attendee.EventCount</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

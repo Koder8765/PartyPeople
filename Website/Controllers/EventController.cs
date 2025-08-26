@@ -34,6 +34,11 @@ namespace Website.Controllers
                 return NotFound();
 
             var @event = await _dbContext.Events.GetByIdAsync(id, cancellationToken);
+            var attendees = await _dbContext.EventAttendees.GetAttendeesForEventAsync(id, cancellationToken);
+
+            // Add AttendeeCount to the event view
+            ViewData["AttendeeCount"] = attendees.Count;
+
             return View(@event);
         }
 

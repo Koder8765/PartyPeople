@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.CodeAnalysis;
+using System.ComponentModel;
 
 namespace Website.Models;
 
@@ -29,4 +30,19 @@ public class Employee
     /// </summary>
     [DisplayName("Date of Birth")]
     public required DateOnly DateOfBirth { get; init; }
+
+    /// <summary>
+    /// Favourite drink of the employee so event organisers know what to serve.
+    /// </summary>
+    /// <remarks>
+    /// When <see langword="null"/>, that means the employee does not have a specific drink in mind
+    /// </remarks>
+    [DisplayName("Favourite Drink")]
+    public string? FavouriteDrink { get; init; }
+
+    /// <summary>
+    /// Holds number of events attended
+    /// </summary>
+    public int? EventCount { get; set; }
+
 }

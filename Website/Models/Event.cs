@@ -12,7 +12,7 @@ public class Event
     /// </summary>
     public required int Id { get; init; }
 
-    /// <summary>
+    /// <summary> 
     /// The description for this event model.
     /// </summary>
     public required string Description { get; init; }
